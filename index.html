@@ -16,6 +16,28 @@
 <body>
     <div id="navbar-root"></div>
 
+    <!-- Global Auth Overlay -->
+    <div id="global-auth-overlay" class="auth-overlay hidden">
+        <div class="auth-card">
+            <h2>RESTRICTED ACCESS</h2>
+            <p>Enter global passcode to access the store.</p>
+
+            <div class="input-wrapper">
+                <input type="password" id="global-pass-input" placeholder="ENTER PASSCODE">
+            </div>
+
+            <button id="global-enter-btn" class="btn full-width" disabled>
+                <i class="fa-solid fa-lock"></i> ENTRY DENIED
+            </button>
+            <div id="global-feedback" class="feedback"></div>
+
+            <div class="auth-footer">
+                <span>Need a passcode?</span>
+                <a href="access.html" class="link-btn">GET ACCESS <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Layout (Home) -->
     <main id="home-view" class="main-layout">
 
@@ -128,10 +150,13 @@
 
                 <div class="controls">
                     <button id="play-preview-btn" class="btn primary-btn">
-                        <i class="fa-solid fa-play"></i> PLAY PREVIEW (30s)
+                        <i class="fa-solid fa-play"></i> PLAY PREVIEW
                     </button>
-                    <button id="download-trigger-btn" class="btn secondary-btn">
+                    <button id="download-mp3-btn" class="btn secondary-btn">
                         <i class="fa-solid fa-download"></i> DOWNLOAD
+                    </button>
+                    <button id="get-wav-btn" class="btn bandcamp-btn">
+                        <i class="fa-solid fa-cart-shopping"></i> GET WAV
                     </button>
                 </div>
                 <div id="audio-status" class="status-text"></div>
@@ -146,32 +171,6 @@
             </div>
         </div>
     </section>
-
-    <!-- Password Modal -->
-    <div id="password-modal" class="modal hidden">
-        <div class="modal-content">
-            <span class="close-modal"><i class="fa-solid fa-xmark"></i></span>
-            <h3>RESTRICTED ACCESS</h3>
-            <p>Enter password to unlock download.</p>
-
-            <input type="password" id="password-input" placeholder="ENTER PASSWORD">
-
-            <button id="submit-password-btn" class="btn full-width" disabled><i class="fa-solid fa-lock"></i>
-                UNLOCK</button>
-            <div id="feedback-msg" class="feedback"></div>
-
-            <div class="or-divider"><span>OR</span></div>
-
-            <button id="buy-bandcamp-btn" class="btn full-width bandcamp-btn">
-                <i class="fa-solid fa-cart-shopping"></i> Download WAV File
-            </button>
-
-            <div class="modal-footer-link">
-                <span>Don't have a password?</span>
-                <button id="get-password-link">GET ACCESS <i class="fa-solid fa-arrow-right"></i></button>
-            </div>
-        </div>
-    </div>
 
     <div id="footer-root"></div>
 

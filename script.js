@@ -26,6 +26,7 @@ async function loadTracksApp() {
         if (res.ok) {
             tracks = await res.json();
             console.log("Loaded tracks from Localhost API");
+            sortTracksDesc();
             return;
         }
     } catch (e) { /* API failed, try file */ }
@@ -36,6 +37,7 @@ async function loadTracksApp() {
         if (res.ok) {
             tracks = await res.json();
             console.log("Loaded tracks from tracks.json");
+            sortTracksDesc();
             return;
         }
     } catch (e) { /* File fetch failed */ }
@@ -43,6 +45,30 @@ async function loadTracksApp() {
     // 3. Fallback
     console.warn("Using Fallback Hardcoded Data");
     tracks = FALLBACK_TRACKS;
+    sortTracksDesc();
+}
+
+function sortTracksDesc() {
+    // Sort Newest First (Desc by uploadDate, then ID)
+    tracks.sort((a, b) => {
+        const dateA = a.uploadDate ? new Date(a.uploadDate).getTime() : 0;
+        const dateB = b.uploadDate ? new Date(b.uploadDate).getTime() : 0;
+        if (dateB !== dateA) return dateB - dateA;
+        return b.id - a.id;
+    });
+}
+
+async function recordStat(id, type) {
+    // Only works if server is running
+    try {
+        await fetch('http://localhost:3000/api/stats', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, type })
+        });
+    } catch (e) {
+        // Silent fail if server offline or static mode
+    }
 }
 
 // Initialization
@@ -72,148 +98,63 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // --- SESSION & MODAL LOGIC ---
 
-// Helper: Check Session
-function isTrackUnlocked(id) {
-    return sessionStorage.getItem(`unlocked_${id}`) === 'true';
-}
+// --- GLOBAL AUTH LOGIC ---
 
-function updateModalContent(trackId) {
-    const modalContent = document.querySelector('#password-modal .modal-content');
-    const track = tracks.find(t => t.id === trackId);
+function checkGlobalAuth() {
+    const isUnlocked = localStorage.getItem('kratex_global_access') === 'true';
+    const overlay = document.getElementById('global-auth-overlay');
 
-    if (isTrackUnlocked(trackId)) {
-        // UNLOCKED VIEW
-        modalContent.innerHTML = `
-            <span class="close-modal"><i class="fa-solid fa-xmark"></i></span>
-            <h3>DOWNLOADS UNLOCKED</h3>
-            <p>Here are your files. Enjoy the music.</p>
-
-            <button id="direct-dl-btn" class="btn full-width secondary-btn" style="margin-bottom: 1rem;">
-                <i class="fa-solid fa-download"></i> DOWNLOAD MP3
-            </button>
-            
-            <button id="wav-dl-btn" class="btn full-width bandcamp-btn">
-                <i class="fa-solid fa-cart-shopping"></i> GET WAV (BANDCAMP)
-            </button>
-
-             <div class="modal-footer-link">
-                <button id="back-to-store-link" style="background:none; border:none; color:#666; margin-top:1rem; cursor:pointer;">CLOSE</button>
-            </div>
-        `;
-
-        // Mobile close listeners need re-attaching since we wiped HTML
-        const closeIcon = document.querySelector('.close-modal');
-        if (closeIcon) {
-            closeIcon.addEventListener('click', () => {
-                document.getElementById('password-modal').classList.add('hidden');
-            });
-        }
-        document.getElementById('back-to-store-link').addEventListener('click', () => {
-            document.getElementById('password-modal').classList.add('hidden');
-        });
-
-        // Attach Button Logic
-        document.getElementById('direct-dl-btn').addEventListener('click', () => startDirectDownload(track));
-        document.getElementById('wav-dl-btn').addEventListener('click', () => {
-            window.open(track.bandcamp || "https://bandcamp.com", "_blank");
-        });
-
+    if (isUnlocked) {
+        if (overlay) overlay.classList.add('hidden');
+        document.body.style.overflow = 'auto'; // Restore scroll
     } else {
-        // LOCKED VIEW (RESTORED)
-        modalContent.innerHTML = `
-            <span class="close-modal"><i class="fa-solid fa-xmark"></i></span>
-            <h3>RESTRICTED ACCESS</h3>
-            <p>Enter password to unlock download.</p>
+        if (overlay) overlay.classList.remove('hidden');
+        document.body.style.overflow = 'hidden'; // Lock scroll
 
-            <input type="password" id="password-input" placeholder="ENTER PASSWORD">
-            
-            <button id="submit-password-btn" class="btn full-width" disabled><i class="fa-solid fa-lock"></i>
-                UNLOCK</button>
-            <div id="feedback-msg" class="feedback"></div>
+        // Attach Listeners if not already attached (or just re-attach)
+        const input = document.getElementById('global-pass-input');
+        const btn = document.getElementById('global-enter-btn');
 
-            <div class="or-divider"><span>OR</span></div>
-
-            <button id="buy-bandcamp-btn-locked" class="btn full-width bandcamp-btn">
-                <i class="fa-solid fa-cart-shopping"></i> Download WAV File
-            </button>
-
-            <div class="modal-footer-link">
-                <span>Don't have a password?</span>
-                <button id="get-password-link">GET ACCESS <i class="fa-solid fa-arrow-right"></i></button>
-            </div>
-        `;
-
-        // Re-attach listeners for Locked View
-        const closeIcon = document.querySelector('.close-modal');
-        if (closeIcon) {
-            closeIcon.addEventListener('click', () => {
-                document.getElementById('password-modal').classList.add('hidden');
+        if (input) {
+            input.addEventListener('input', validateGlobalInput);
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') verifyGlobalPasscode();
             });
         }
-
-        // Validation & Submit
-        const passInput = document.getElementById('password-input');
-        const submitBtn = document.getElementById('submit-password-btn');
-
-        passInput.addEventListener('input', validatePasswordInput);
-        passInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkPassword(); });
-        submitBtn.addEventListener('click', checkPassword);
-
-        // Bandcamp (Locked)
-        document.getElementById('buy-bandcamp-btn-locked').addEventListener('click', () => {
-            window.open(track.bandcamp || "https://bandcamp.com", "_blank");
-        });
-
-        // Get Access
-        document.getElementById('get-password-link').addEventListener('click', () => {
-            window.location.href = 'access.html';
-        });
+        if (btn) {
+            btn.addEventListener('click', verifyGlobalPasscode);
+        }
     }
 }
 
-function startDirectDownload(track) {
-    if (track.audio && track.audio !== "") {
-        const link = document.createElement('a');
-        link.href = track.audio;
-        link.download = `${track.title}.wav`; // Saving as .wav (source is wav)
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    } else {
-        alert("File not available.");
-    }
-}
-
-async function validatePasswordInput() {
-    const input = document.getElementById('password-input');
-    const submitBtn = document.getElementById('submit-password-btn');
+async function validateGlobalInput() {
+    const input = document.getElementById('global-pass-input');
+    const btn = document.getElementById('global-enter-btn');
     const password = input.value;
 
     if (!password) {
-        submitBtn.disabled = true;
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-lock"></i> ENTRY DENIED`;
         return;
     }
 
+    // Verify against MASTER hash
     const fingerprint = await sha256(password);
-    const trackHashKey = `TRACK_${currentTrackId}`;
-    const trackHash = HASHES[trackHashKey];
 
-    if (fingerprint === HASHES.MASTER || fingerprint === trackHash) {
-        // Valid Password
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = `<i class="fa-solid fa-unlock"></i> DOWNLOAD NOW`;
-        submitBtn.classList.add('secondary-btn'); // Make it solid orange
+    if (fingerprint === HASHES.MASTER) {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-unlock"></i> ENTER STORE`;
+        btn.classList.add('secondary-btn');
     } else {
-        // Invalid
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = `<i class="fa-solid fa-lock"></i> UNLOCK`;
-        submitBtn.classList.remove('secondary-btn');
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-lock"></i> ENTRY DENIED`;
+        btn.classList.remove('secondary-btn'); // Back to default disabled style
     }
 }
 
-async function checkPassword() {
-    const input = document.getElementById('password-input');
-    const feedback = document.getElementById('feedback-msg');
+async function verifyGlobalPasscode() {
+    const input = document.getElementById('global-pass-input');
+    const feedback = document.getElementById('global-feedback');
     const password = input.value;
 
     if (!password) return;
@@ -222,24 +163,33 @@ async function checkPassword() {
     feedback.className = "feedback";
 
     const fingerprint = await sha256(password);
-    const trackHashKey = `TRACK_${currentTrackId}`;
-    const trackHash = HASHES[trackHashKey];
 
-    if (fingerprint === HASHES.MASTER || fingerprint === trackHash) {
-        // SUCCESS
+    if (fingerprint === HASHES.MASTER) {
+        // Success
         feedback.innerText = "ACCESS GRANTED.";
         feedback.className = "feedback success";
 
-        // Save Session
-        sessionStorage.setItem(`unlocked_${currentTrackId}`, 'true');
+        localStorage.setItem('kratex_global_access', 'true');
 
         setTimeout(() => {
-            updateModalContent(currentTrackId); // Switch to Unlocked View
+            checkGlobalAuth();
         }, 800);
-
     } else {
-        feedback.innerText = "ACCESS DENIED. INCORRECT PASSWORD.";
+        feedback.innerText = "INCORRECT PASSCODE.";
         feedback.className = "feedback error";
+    }
+}
+
+function startDirectDownload(track) {
+    if (track.audio && track.audio !== "") {
+        const link = document.createElement('a');
+        link.href = track.audio;
+        link.download = `${track.title}.mp3`; // Saving as .mp3 (or original ext)
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    } else {
+        alert("File not available.");
     }
 }
 
@@ -365,6 +315,7 @@ function openTrackPage(id, updateHash = true) {
     if (!track) return;
 
     currentTrackId = id;
+    recordStat(id, 'view'); // Analytics
 
     // UI Update
     document.getElementById('detail-img').src = track.image;
@@ -481,37 +432,38 @@ async function sha256(message) {
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+// --- EVENT LISTENERS ---
+
 function setupEventListeners() {
-    // Navigation
-    const homeLink = document.getElementById('home-link');
-    if (homeLink) homeLink.addEventListener('click', () => closeTrackPage(true));
+    // 1. Check Global Auth on Load
+    checkGlobalAuth();
 
+    // 2. Track Detail View Listeners
     const backBtn = document.getElementById('back-btn');
-    if (backBtn) backBtn.addEventListener('click', () => closeTrackPage(true));
+    if (backBtn) {
+        backBtn.addEventListener('click', () => closeTrackPage());
+    }
 
-    // Audio Preview
-    const playBtn = document.getElementById('play-preview-btn');
-    if (playBtn) playBtn.addEventListener('click', togglePreview);
+    const previewBtn = document.getElementById('play-preview-btn');
+    if (previewBtn) {
+        previewBtn.addEventListener('click', togglePreview);
+    }
 
-    // Download Trigger (Opens Modal)
-    const downloadBtn = document.getElementById('download-trigger-btn');
-    if (downloadBtn) {
-        downloadBtn.addEventListener('click', () => {
-            if (!currentTrackId) return;
-            // Update Modal Content based on Session State
-            updateModalContent(currentTrackId);
-            const modal = document.getElementById('password-modal');
-            if (modal) modal.classList.remove('hidden');
+    const downloadMp3Btn = document.getElementById('download-mp3-btn');
+    if (downloadMp3Btn) {
+        downloadMp3Btn.addEventListener('click', () => {
+            if (currentTrackId) recordStat(currentTrackId, 'download');
+            const track = tracks.find(t => t.id === currentTrackId);
+            if (track) startDirectDownload(track);
         });
     }
 
-    // Bandcamp Button (Fallback - Initial render)
-    const bandcampBtn = document.getElementById('buy-bandcamp-btn');
-    if (bandcampBtn) {
-        bandcampBtn.addEventListener('click', () => {
-            if (!currentTrackId) return;
+    const getWavBtn = document.getElementById('get-wav-btn');
+    if (getWavBtn) {
+        getWavBtn.addEventListener('click', () => {
+            if (currentTrackId) recordStat(currentTrackId, 'wav');
             const track = tracks.find(t => t.id === currentTrackId);
-            window.open(track.bandcamp || "https://bandcamp.com", "_blank");
+            if (track) window.open(track.bandcamp || "https://bandcamp.com", "_blank");
         });
     }
 

@@ -15,201 +15,455 @@
     <!-- Styles -->
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Admin Specific Styles */
-        .admin-container {
-            max-width: 800px;
-            margin: 4rem auto;
-            padding: 2rem;
-            background: #fff;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+        /* Admin Dashboard Styles */
+        :root {
+            --sidebar-width: 250px;
+            --header-height: 60px;
+            --primary: #111;
+            --accent: #EE6C4D;
+            --bg-light: #f4f6f8;
+            --border: #e0e0e0;
         }
 
+        body {
+            background-color: var(--bg-light);
+            overflow-x: hidden;
+        }
+
+        /* Layout */
+        .dashboard-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: #fff;
+            border-right: 1px solid var(--border);
+            position: fixed;
+            height: 100vh;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 3rem;
+            padding-left: 1rem;
+            letter-spacing: -1px;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+        }
+
+        .nav-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-links a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #666;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background: #f0f0f0;
+            color: var(--primary);
+        }
+
+        .nav-links a i {
+            margin-right: 10px;
+            width: 20px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 2rem;
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-refresh {
+            background: none;
+            border: 1px solid var(--border);
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        /* Stats & Actions */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+            border: 1px solid var(--border);
+        }
+
+        .stat-card h3 {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .stat-card .val {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        /* Table */
+        .table-container {
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+        }
+
+        .tracks-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .tracks-table th {
+            background: #fafafa;
+            font-weight: 600;
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .tracks-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+
+        .tracks-table tr:hover {
+            background: #fcfcfc;
+        }
+
+        .track-thumb {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            object-fit: cover;
+            background: #eee;
+        }
+
+        /* Buttons */
+        .btn-action {
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            margin-right: 5px;
+            transition: 0.2s;
+        }
+
+        .btn-edit {
+            background: #edf2ff;
+            color: #4263eb;
+        }
+
+        .btn-edit:hover {
+            background: #bac8ff;
+        }
+
+        .btn-delete {
+            background: #fff0f0;
+            color: #fa5252;
+        }
+
+        .btn-delete:hover {
+            background: #ffc9c9;
+        }
+
+        .primary-btn {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .primary-btn:hover {
+            opacity: 0.9;
+        }
+
+        .sortable {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .sortable:hover {
+            background: #eee;
+            color: #333;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: #fff;
+            width: 500px;
+            max-width: 90%;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            transform: translateY(20px);
+            transition: 0.3s;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h3 {
+            font-size: 1.25rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #888;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: inherit;
+        }
+
+        /* Login */
         .login-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            z-index: 2000;
+            background: #fff;
+            z-index: 3000;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .login-box {
-            background: #fff;
-            padding: 2rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .login-box h2 {
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-            text-align: left;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            font-size: 0.8rem;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 0.8rem;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-family: inherit;
-        }
-
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .preview-json {
-            font-family: monospace;
-            background: #f4f4f4;
-            padding: 1rem;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-            width: 100%;
-            height: 200px;
-            overflow: auto;
-            margin-top: 1rem;
-            white-space: pre;
-        }
-
-        .success-msg {
-            color: green;
-            margin-top: 0.5rem;
-            font-weight: 600;
-        }
-
-        .error-msg {
-            color: red;
-            margin-top: 0.5rem;
-        }
-
-        .tracks-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-        }
-
-        .tracks-table th,
-        .tracks-table td {
-            padding: 0.75rem;
-            border-bottom: 1px solid #eee;
-            text-align: left;
-        }
-
-        .tracks-table th {
-            background: #f9f9f9;
-            font-weight: 600;
-        }
-
-        .track-thumb {
-            width: 40px;
-            height: 40px;
-            object-fit: cover;
-            border-radius: 4px;
-        }
-
-        .delete-btn {
-            background: #fee2e2;
-            color: #dc2626;
-            border: none;
-            padding: 4px 8px;
-            cursor: pointer;
-            border-radius: 4px;
-            font-size: 0.8rem;
-        }
-
-        .delete-btn:hover {
-            background: #fecaca;
-        }
-
-        .edit-btn {
-            background: #dbeafe;
-            color: #1e40af;
-            border: none;
-            padding: 4px 8px;
-            cursor: pointer;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            margin-right: 5px;
-        }
-
-        .edit-btn:hover {
-            background: #bfdbfe;
-        }
-
         .hidden {
             display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+
+            /* Simplified for mobile, or add toggle */
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
         }
     </style>
 </head>
 
 <body>
 
-    <!-- Inject Navbar -->
-    <div id="navbar-root"></div>
-
     <!-- Login Overlay -->
     <div id="login-overlay" class="login-overlay">
-        <div class="login-box">
-            <h2><i class="fa-solid fa-user-shield"></i> ADMIN ACCESS</h2>
+        <div class="login-box" style="text-align: center; max-width: 350px;">
+            <h2 style="margin-bottom:1.5rem;">ADMIN ACCESS</h2>
+            <div class="form-group"><input type="text" id="admin-id" placeholder="Admin ID"></div>
+            <div class="form-group"><input type="password" id="admin-pass" placeholder="Password"></div>
             <div class="form-group">
-                <label>Admin ID</label>
-                <input type="text" id="admin-id" placeholder="Enter ID">
-            </div>
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" id="admin-pass" placeholder="Enter Password">
-            </div>
-            <div class="form-group checkbox-group" style="margin-bottom: 1.5rem; text-align: left;">
-                <input type="checkbox" id="remember-me">
-                <label for="remember-me"
-                    style="display:inline; margin-left: 0.5rem; font-weight: 400; font-size: 0.9rem;">Keep me logged
+                <input type="checkbox" id="remember-me"> <label for="remember-me" style="display:inline;">Keep me logged
                     in</label>
             </div>
-            <button id="login-btn" class="btn primary-btn full-width">LOGIN</button>
-            <div id="login-msg" class="error-msg"></div>
+            <button id="login-btn" class="primary-btn" style="width:100%">LOGIN</button>
+            <div id="login-msg" style="color:red; margin-top:0.5rem;"></div>
         </div>
     </div>
 
-    <!-- Dashboard Content (Hidden initially) -->
-    <div id="admin-dashboard" class="main-layout hidden" style="display: none;">
-        <div class="admin-container">
-            <div class="admin-header">
+    <!-- Dashboard Content -->
+    <div id="admin-dashboard" class="dashboard-wrapper hidden">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">KRATEX STORE</div>
+            <ul class="nav-links">
+                <li><a href="#" class="active"><i class="fa-solid fa-music"></i> Tracks</a></li>
+                <!-- <li><a href="#"><i class="fa-solid fa-chart-simple"></i> Analytics</a></li> -->
+                <li><a href="#" id="logout-link"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="dashboard-header">
                 <div>
-                    <h2>Track Ingestion Dashboard</h2>
-                    <span id="last-saved-time" style="font-size:0.8rem; color:#666;">Last Update: Checking...</span>
+                    <h1 style="font-size: 1.5rem; margin-bottom: 0.25rem;">Overview</h1>
+                    <span id="last-saved-time" style="font-size:0.8rem; color:#888;">Checking server...</span>
                 </div>
-                <button id="logout-btn" class="btn secondary-btn">LOGOUT</button>
+                <button id="refresh-btn" class="dashboard-refresh"><i class="fa-solid fa-rotate"></i> Sync Data</button>
+            </header>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Tracks</h3>
+                    <div class="val" id="total-tracks-val">0</div>
+                </div>
+                <!-- <div class="stat-card"><h3>Total Downloads</h3><div class="val">1,204</div></div> -->
+            </div>
+
+            <div class="action-bar">
+                <h2 style="font-size: 1.25rem;">Track Library</h2>
+                <button id="open-add-modal" class="primary-btn"><i class="fa-solid fa-plus"></i> Add New Track</button>
+            </div>
+
+            <div class="table-container">
+                <table class="tracks-table">
+                    <thead>
+                        <tr>
+                            <th width="30" class="sortable" data-sort="id"># <i class="fa-solid fa-sort"></i></th>
+                            <th width="60">Art</th>
+                            <th class="sortable" data-sort="title">Title <i class="fa-solid fa-sort"></i></th>
+                            <th class="sortable" data-sort="genre">Genre <i class="fa-solid fa-sort"></i></th>
+                            <th width="60" class="stat-col text-center sortable" data-sort="views">Views <i
+                                    class="fa-solid fa-sort"></i></th>
+                            <th width="60" class="stat-col text-center sortable" data-sort="downloads">DLs <i
+                                    class="fa-solid fa-sort"></i></th>
+                            <th width="60" class="stat-col text-center sortable" data-sort="wavs">WAVs <i
+                                    class="fa-solid fa-sort"></i></th>
+                            <th width="100" class="stat-col sortable" data-sort="date">Added <i
+                                    class="fa-solid fa-sort"></i></th>
+                            <th width="120">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tracks-table-body">
+                        <!-- JS Rendered -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Manual Mode Backup JSON -->
+            <div id="manual-mode-notice" class="hidden"
+                style="margin-top: 2rem; padding: 1rem; background: #fff8e1; border: 1px solid #ffe082; border-radius: 8px;">
+                <strong>⚠️ Server Offline (Manual Mode)</strong><br>
+                Changes are local only. Copy JSON below to `tracks.json` manually.
+                <textarea id="json-output"
+                    style="width:100%; height:100px; margin-top:0.5rem; font-family:monospace;"></textarea>
+                <button id="copy-json-btn">Copy JSON</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal for Add/Edit -->
+    <div id="track-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Add New Track</h3>
+                <button id="close-modal-btn" class="modal-close"><i class="fa-solid fa-xmark"></i></button>
             </div>
 
             <form id="ingest-form">
                 <div class="form-group">
-                    <label>Track Title</label>
+                    <label>Title</label>
                     <input type="text" id="track-title" required>
                 </div>
                 <div class="form-group">
@@ -217,64 +471,50 @@
                     <input type="text" id="track-genre" required>
                 </div>
                 <div class="form-group">
-                    <label>Cover Image</label>
-                    <input type="text" id="track-image" placeholder="URL (e.g. assets/chandra.png)">
-                    <input type="file" id="track-image-file" accept="image/*" style="margin-top:0.5rem">
-                    <small style="color:#888; font-size:0.75rem;">Upload overrides URL. (Requires Server)</small>
+                    <label>Cover Art</label>
+                    <input type="text" id="track-image" placeholder="Image URL">
+                    <input type="file" id="track-image-file" accept="image/*"
+                        style="margin-top:0.5rem; font-size:0.8rem;">
                 </div>
                 <div class="form-group">
                     <label>Audio File</label>
-                    <input type="text" id="track-audio" placeholder="URL (e.g. assets/music/track.wav)">
-                    <input type="file" id="track-audio-file" accept="audio/*" style="margin-top:0.5rem">
+                    <input type="text" id="track-audio" placeholder="Audio URL">
+                    <input type="file" id="track-audio-file" accept="audio/*"
+                        style="margin-top:0.5rem; font-size:0.8rem;">
                 </div>
                 <div class="form-group">
                     <label>Bandcamp Link</label>
                     <input type="text" id="track-bandcamp">
                 </div>
 
-                <button type="submit" class="btn primary-btn">ADD TRACK TO LIST</button>
+                <button type="submit" class="primary-btn" style="width:100%">SAVE TRACK</button>
             </form>
+        </div>
+    </div>
 
-            <hr style="margin: 2rem 0; border: 0; border-top: 1px solid #eee;">
-
-            <div class="admin-header" style="border:none; margin-bottom:1rem; padding-bottom:0;">
-                <h3><i class="fa-solid fa-list"></i> Existing Tracks</h3>
-                <button id="refresh-btn" class="btn"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 400px; text-align: center;">
+            <div style="margin-bottom: 1.5rem;">
+                <div
+                    style="width: 50px; height: 50px; background: #ffebeb; color: #fa5252; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 1rem;">
+                    <i class="fa-solid fa-trash"></i>
+                </div>
+                <h3 style="margin-bottom: 0.5rem; color: #333;">Delete Track?</h3>
+                <p style="color: #666; font-size: 0.9rem;">Are you sure you want to delete <strong
+                        id="delete-track-name"></strong>? This action cannot be undone.</p>
             </div>
 
-            <div class="tracks-list-container">
-                <table class="tracks-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 50px;">ID</th>
-                            <th style="width: 60px;">Art</th>
-                            <th>Title</th>
-                            <th>Genre</th>
-                            <th style="width: 100px;">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tracks-table-body">
-                        <!-- Populated by JS -->
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- JSON Fallback (Hidden by default unless server unavailable?) -->
-            <div id="manual-mode-notice" class="hidden"
-                style="margin-top: 2rem; padding: 1rem; background: #fff3cd; border: 1px solid #ffeeba;">
-                <strong>Server Not Detected:</strong> Auto-save disabled. Running in Manual Mode.
-                <textarea id="json-output" class="preview-json" readonly></textarea>
-                <button id="copy-json-btn" class="btn" style="margin-top:0.5rem">COPY JSON MANUALLY</button>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button id="cancel-delete-btn" class="btn-action"
+                    style="background: #eee; color: #333; padding: 0.8rem 1.5rem; font-weight: 600;">Cancel</button>
+                <button id="confirm-delete-btn" class="primary-btn" style="background: #fa5252;">Delete</button>
             </div>
         </div>
     </div>
 
-    <!-- Inject Footer -->
-    <div id="footer-root"></div>
-
     <!-- Scripts -->
     <script src="navbar.js"></script>
-    <script src="tracks.json" type="text/javascript"></script> <!-- Need valid JS or fetch? -->
     <!-- tracks.json is JSON, scripts can't load it directly unless assigned to variable. 
          Wait, `tracks.json` is currently loaded how? 
          In `script.js` we use `fetch` or assume `tracks` global?
@@ -288,7 +528,7 @@
          Maybe `tracks` is defined in `script.js`?
          Let me check `script.js` start.
     -->
-    <script src="admin.js"></script>
+    <script src="admin-app.js"></script>
 
 </body>
 

@@ -1,130 +1,18 @@
 [
     {
         "id": 1,
-        "title": "Chandra (Kratex Remix)",
+        "title": "Chandra (Kratex Remix)1",
         "genre": "House",
         "image": "assets/chandra.png",
         "audio": "assets/music/chandra.wav",
         "bandcamp": "https://bandcamp.com/tag/kratex"
     },
     {
-        "id": 2,
-        "title": "Ethereal Frequencies",
+        "title": "Mama Chya Gavala",
         "genre": "House",
-        "image": "assets/album1.png",
-        "audio": "",
-        "bandcamp": "https://bandcamp.com"
-    },
-    {
-        "id": 3,
-        "title": "Deep Echoes",
-        "genre": "House",
-        "image": "assets/album2.png",
-        "audio": "",
-        "bandcamp": "https://bandcamp.com"
-    },
-    {
-        "id": 4,
-        "title": "Urban Pulse",
-        "genre": "House",
-        "image": "assets/album3.png",
-        "audio": "",
-        "bandcamp": "https://bandcamp.com"
-    },
-    {
-        "id": 5,
-        "title": "Chandra (Original)",
-        "genre": "House",
-        "image": "assets/chandra.png",
-        "audio": "assets/music/chandra.wav",
-        "bandcamp": "https://bandcamp.com"
-    },
-    {
-        "id": 6,
-        "title": "Velvet Underground",
-        "genre": "House",
-        "image": "https://placehold.co/500x500/222/FFF?text=Velvet",
-        "audio": "",
-        "bandcamp": "https://bandcamp.com"
-    },
-    {
-        "id": 7,
-        "title": "Concrete Jungle",
-        "genre": "House",
-        "image": "https://placehold.co/500x500/333/FFF?text=Concrete",
-        "audio": "",
-        "bandcamp": "https://bandcamp.com"
-    },
-    {
-        "id": 8,
-        "title": "Analog Dreams",
-        "genre": "House",
-        "image": "https://placehold.co/500x500/444/FFF?text=Analog",
-        "audio": "",
-        "bandcamp": "https://bandcamp.com"
-    },
-    {
-        "id": 9,
-        "title": "Digital Soul",
-        "genre": "House",
-        "image": "https://placehold.co/500x500/555/FFF?text=Soul",
-        "audio": "",
-        "bandcamp": "https://bandcamp.com"
-    },
-    {
-        "id": 10,
-        "title": "System Glitch",
-        "genre": "House",
-        "image": "https://placehold.co/500x500/666/FFF?text=Glitch",
-        "audio": "",
-        "bandcamp": "https://bandcamp.com"
-    },
-    {
-        "title": "qasd",
-        "genre": "fdsfds",
-        "image": "",
-        "audio": "",
-        "bandcamp": "",
-        "id": 11
-    },
-    {
-        "title": "qasd",
-        "genre": "fdsfds",
-        "image": "",
-        "audio": "",
-        "bandcamp": "",
-        "id": 12
-    },
-    {
-        "title": "fsdds",
-        "genre": "sdfsdf",
-        "image": "",
-        "audio": "",
-        "bandcamp": "",
-        "id": 13
-    },
-    {
-        "title": "fsdds",
-        "genre": "sdfsdf",
-        "image": "",
-        "audio": "",
-        "bandcamp": "",
-        "id": 14
-    },
-    {
-        "title": "dasd",
-        "genre": "dasad",
-        "image": "",
-        "audio": "",
-        "bandcamp": "",
-        "id": 15
-    },
-    {
-        "title": "dasd",
-        "genre": "dasad",
-        "image": "",
-        "audio": "",
-        "bandcamp": "",
-        "id": 16
+        "image": "assets/uploads/image-1765979146883-486984151.png",
+        "audio": "assets/uploads/audio-1765979146936-966965656.mp3",
+        "bandcamp": "https://kratex.bandcamp.com/track/mamachya-gavala-extended-mix",
+        "id": 17
     }
 ]

@@ -40,9 +40,24 @@ const storage = multer.diskStorage({
         cb(null, dir);
     },
     filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        // Try to get title from body (depends on field order in FormData)
+        // If not present, fallback to timestamp
+        let filenameBase = 'upload-' + Date.now();
+
+        if (req.body && req.body.title) {
+            // Sanitization: "Use underscore if spaces... use camel casing"
+            // Let's do: My New Track -> My_New_Track (Snake with Caps) as requested "underscore if spaces"
+            // Wait, "camel casing" implies myNewTrack. 
+            // The user prompt is contradictory: "Use underscore if sapces are found ... use came casing".
+            // I'll prioritize underscore for spaces, preserving case usually, or just removing spaces.
+            // Let's go with: "My New Track" -> "My_New_Track"
+            filenameBase = req.body.title.trim().replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+        }
+
         const ext = path.extname(file.originalname);
-        cb(null, file.fieldname + '-' + uniqueSuffix + ext);
+        // Add timestamp to ensure uniqueness even with same title
+        const unique = Date.now().toString().slice(-4);
+        cb(null, `${filenameBase}_${unique}${ext}`);
     }
 });
 const upload = multer({ storage: storage });
@@ -78,16 +93,40 @@ app.get('/api/tracks', (req, res) => {
     res.json(tracks);
 });
 
+// STATS Update
+app.post('/api/stats', (req, res) => {
+    const { id, type } = req.body; // type: 'view' | 'download' | 'wav'
+    const tracks = readData();
+    const track = tracks.find(t => t.id === parseInt(id));
+
+    if (track) {
+        if (!track.stats) track.stats = { views: 0, downloads: 0, wavClicks: 0 };
+
+        if (type === 'view') track.stats.views = (track.stats.views || 0) + 1;
+        if (type === 'download') track.stats.downloads = (track.stats.downloads || 0) + 1;
+        if (type === 'wav') track.stats.wavClicks = (track.stats.wavClicks || 0) + 1;
+
+        writeData(tracks);
+        res.json({ success: true, stats: track.stats });
+    } else {
+        res.status(404).json({ error: "Track not found" });
+    }
+});
+
 // POST (Add) Track
 app.post('/api/tracks', (req, res) => {
     const tracks = readData();
     const newTrack = req.body;
 
-    // Assign ID if missing
+    // Assign ID
     if (!newTrack.id) {
         const maxId = tracks.length > 0 ? Math.max(...tracks.map(t => t.id)) : 0;
         newTrack.id = maxId + 1;
     }
+
+    // Initialize Metadata
+    newTrack.uploadDate = new Date().toISOString();
+    newTrack.stats = { views: 0, downloads: 0, wavClicks: 0 };
 
     tracks.push(newTrack);
     writeData(tracks);
@@ -98,11 +137,17 @@ app.post('/api/tracks', (req, res) => {
 app.put('/api/tracks/:id', (req, res) => {
     const id = parseInt(req.params.id);
     const updatedTrack = req.body;
-    let tracks = readData();
-
+    const tracks = readData();
     const index = tracks.findIndex(t => t.id === id);
+
     if (index !== -1) {
-        tracks[index] = { ...tracks[index], ...updatedTrack, id: id };
+        // Preserve un-sent stats/date if updating unrelated fields
+        const existing = tracks[index];
+        updatedTrack.uploadDate = existing.uploadDate || new Date().toISOString();
+        updatedTrack.stats = existing.stats || { views: 0, downloads: 0, wavClicks: 0 };
+
+        // Merge
+        tracks[index] = { ...existing, ...updatedTrack, id: id };
         writeData(tracks);
         res.json({ success: true, track: tracks[index] });
     } else {
@@ -114,12 +159,10 @@ app.put('/api/tracks/:id', (req, res) => {
 app.delete('/api/tracks/:id', (req, res) => {
     const id = parseInt(req.params.id);
     let tracks = readData();
-    const initialLength = tracks.length;
+    const newTracks = tracks.filter(t => t.id !== id);
 
-    tracks = tracks.filter(t => t.id !== id);
-
-    if (tracks.length < initialLength) {
-        writeData(tracks);
+    if (tracks.length !== newTracks.length) {
+        writeData(newTracks);
         res.json({ success: true });
     } else {
         res.status(404).json({ error: "Track not found" });
