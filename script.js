@@ -12,6 +12,11 @@ const FALLBACK_TRACKS = [
     { id: 10, title: "System Glitch", genre: "House", image: "https://placehold.co/500x500/666/FFF?text=Glitch", audio: "", bandcamp: "https://bandcamp.com" }
 ];
 
+// Dynamic Base URL
+const API_BASE = (window.location.protocol === 'file:' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:3000'
+    : '';
+
 let tracks = [];
 
 let currentAudio = null;
@@ -22,10 +27,10 @@ let currentTrackId = null;
 async function loadTracksApp() {
     try {
         // 1. Try API (if server running)
-        const res = await fetch('/api/tracks');
+        const res = await fetch(`${API_BASE}/api/tracks`);
         if (res.ok) {
             tracks = await res.json();
-            console.log("Loaded tracks from Localhost API");
+            console.log("Loaded tracks from API");
             sortTracksDesc();
             return;
         }
@@ -61,7 +66,7 @@ function sortTracksDesc() {
 async function recordStat(id, type) {
     // Only works if server is running
     try {
-        await fetch('/api/stats', {
+        await fetch(`${API_BASE}/api/stats`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id, type })

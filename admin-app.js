@@ -37,6 +37,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // State
     const ADMIN_ID = "kratexadmin123";
     const ADMIN_PASS = "adminpass123";
+
+    // Dynamic API Base for local file access vs production/server
+    const API_BASE = (window.location.protocol === 'file:' || window.location.hostname === '127.0.0.1')
+        ? 'http://localhost:3000'
+        : '';
+
     let isServerAvailable = false;
     let currentTracks = [];
     let editingTrackId = null;
@@ -83,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (isServerAvailable) {
             try {
-                const res = await fetch(`/api/tracks/${id}`, {
+                const res = await fetch(`${API_BASE}/api/tracks/${id}`, {
                     method: 'DELETE'
                 });
                 if (res.ok) {
@@ -137,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. Core Logic
     async function checkServerStatus() {
         try {
-            const res = await fetch(`/api/meta?t=${Date.now()}`);
+            const res = await fetch(`${API_BASE}/api/meta?t=${Date.now()}`);
             if (res.ok) {
                 isServerAvailable = true;
                 const data = await res.json();
@@ -173,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function loadTracks() {
         try {
             if (isServerAvailable) {
-                const res = await fetch(`/api/tracks?t=${Date.now()}`);
+                const res = await fetch(`${API_BASE}/api/tracks?t=${Date.now()}`);
                 currentTracks = await res.json();
             } else {
                 const res = await fetch(`tracks.json?t=${Date.now()}`);
@@ -279,7 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function updateTrack(id, trackData) {
         if (isServerAvailable) {
             try {
-                const res = await fetch(`/api/tracks/${id}`, {
+                const res = await fetch(`${API_BASE}/api/tracks/${id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(trackData)
@@ -309,7 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function addTrack(trackData) {
         if (isServerAvailable) {
             try {
-                const res = await fetch('/api/tracks', {
+                const res = await fetch(`${API_BASE}/api/tracks`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(trackData)
@@ -346,7 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (imageFile) formData.append('image', imageFile);
         if (audioFile) formData.append('audio', audioFile);
 
-        const res = await fetch('/api/upload', {
+        const res = await fetch(`${API_BASE}/api/upload`, {
             method: 'POST',
             body: formData
         });
