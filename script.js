@@ -170,6 +170,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderRankings();
     setupEventListeners();
     setupSearch();
+    fetchShows();
 
     // Deep Linking Support
     checkHashRoute();
