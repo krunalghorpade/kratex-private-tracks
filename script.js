@@ -1,5 +1,5 @@
 // Demo Data - Tracks (Hardcoded for local file compatibility)
-const tracks = [
+const FALLBACK_TRACKS = [
     { id: 1, title: "Chandra (Kratex Remix)", genre: "House", image: "assets/chandra.png", audio: "assets/music/chandra.wav", bandcamp: "https://bandcamp.com/tag/kratex" },
     { id: 2, title: "Ethereal Frequencies", genre: "House", image: "assets/album1.png", audio: "", bandcamp: "https://bandcamp.com" },
     { id: 3, title: "Deep Echoes", genre: "House", image: "assets/album2.png", audio: "", bandcamp: "https://bandcamp.com" },
@@ -12,20 +12,53 @@ const tracks = [
     { id: 10, title: "System Glitch", genre: "House", image: "https://placehold.co/500x500/666/FFF?text=Glitch", audio: "", bandcamp: "https://bandcamp.com" }
 ];
 
+let tracks = [];
+
 let currentAudio = null;
 let audioPreviewTimeout = null;
 let currentTrackId = null;
 
+// Helper to Load Data
+async function loadTracksApp() {
+    try {
+        // 1. Try API (if server running)
+        const res = await fetch('http://localhost:3000/api/tracks');
+        if (res.ok) {
+            tracks = await res.json();
+            console.log("Loaded tracks from Localhost API");
+            return;
+        }
+    } catch (e) { /* API failed, try file */ }
+
+    try {
+        // 2. Try Local JSON (only works if running via server/localhost, not file://)
+        const res = await fetch('tracks.json');
+        if (res.ok) {
+            tracks = await res.json();
+            console.log("Loaded tracks from tracks.json");
+            return;
+        }
+    } catch (e) { /* File fetch failed */ }
+
+    // 3. Fallback
+    console.warn("Using Fallback Hardcoded Data");
+    tracks = FALLBACK_TRACKS;
+}
+
 // Initialization
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // Initialize App
-    initNavbar(); // Defined in navbar.js
-    setupMobileNav(); // Defined in navbar.js
+    initNavbar();
+    initFooter();
+    setupMobileNav();
 
     initCarousel();
     fetchShows();
     renderYoutubeCarousel();
     renderMhouseCarousel();
+
+    // Data Load Phase
+    await loadTracksApp();
 
     renderMasterShowcase();
     renderRankings();

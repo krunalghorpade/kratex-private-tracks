@@ -1,7 +1,7 @@
 const NAVBAR_HTML = `
 <!-- Header -->
 <header>
-    <div class="logo">KRATEX MEMBERS ZONE 🔑</div>
+    <a href="index.html" class="logo">KRATEX MEMBERS ZONE 🔑</a>
 
     <!-- Mobile Actions (Right) -->
     <div class="mobile-actions">
@@ -48,12 +48,38 @@ const NAVBAR_HTML = `
 </div>
 `;
 
+const FOOTER_HTML = `
+<footer class="site-footer">
+    <div class="footer-inner">
+        <a href="index.html" class="logo footer-logo">KRATEX STORE</a>
+        <div class="footer-links">
+            <a href="#">Terms of Service</a>
+            <a href="#">Privacy Policy</a>
+            <a href="mailto:contact@kratex.in">Contact</a>
+            <a href="admin.html">Admin</a>
+            <div class="social-links">
+                <a href="#" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" target="_blank"><i class="fa-brands fa-youtube"></i></a>
+            </div>
+        </div>
+        <div class="copyright">© 2025 Kratex.</div>
+    </div>
+</footer>
+`;
+
 function initNavbar() {
     const container = document.getElementById('navbar-root');
     if (container) {
         container.innerHTML = NAVBAR_HTML;
     } else {
         console.warn("Navbar root element not found!");
+    }
+}
+
+function initFooter() {
+    const container = document.getElementById('footer-root');
+    if (container) {
+        container.innerHTML = FOOTER_HTML;
     }
 }
 
@@ -80,3 +106,4 @@ function setupMobileNav() {
     }
     if (closeSearch) closeSearch.addEventListener('click', () => searchOverlay.classList.add('hidden'));
 }
+

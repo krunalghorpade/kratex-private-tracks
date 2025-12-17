@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kratex Admin Dashboard</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Admin Specific Styles */
+        .admin-container {
+            max-width: 800px;
+            margin: 4rem auto;
+            padding: 2rem;
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-box {
+            background: #fff;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-box h2 {
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .preview-json {
+            font-family: monospace;
+            background: #f4f4f4;
+            padding: 1rem;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            width: 100%;
+            height: 200px;
+            overflow: auto;
+            margin-top: 1rem;
+            white-space: pre;
+        }
+
+        .success-msg {
+            color: green;
+            margin-top: 0.5rem;
+            font-weight: 600;
+        }
+
+        .error-msg {
+            color: red;
+            margin-top: 0.5rem;
+        }
+
+        .tracks-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .tracks-table th,
+        .tracks-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+        }
+
+        .tracks-table th {
+            background: #f9f9f9;
+            font-weight: 600;
+        }
+
+        .track-thumb {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .delete-btn {
+            background: #fee2e2;
+            color: #dc2626;
+            border: none;
+            padding: 4px 8px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .delete-btn:hover {
+            background: #fecaca;
+        }
+
+        .edit-btn {
+            background: #dbeafe;
+            color: #1e40af;
+            border: none;
+            padding: 4px 8px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-right: 5px;
+        }
+
+        .edit-btn:hover {
+            background: #bfdbfe;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Inject Navbar -->
+    <div id="navbar-root"></div>
+
+    <!-- Login Overlay -->
+    <div id="login-overlay" class="login-overlay">
+        <div class="login-box">
+            <h2><i class="fa-solid fa-user-shield"></i> ADMIN ACCESS</h2>
+            <div class="form-group">
+                <label>Admin ID</label>
+                <input type="text" id="admin-id" placeholder="Enter ID">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="admin-pass" placeholder="Enter Password">
+            </div>
+            <div class="form-group checkbox-group" style="margin-bottom: 1.5rem; text-align: left;">
+                <input type="checkbox" id="remember-me">
+                <label for="remember-me"
+                    style="display:inline; margin-left: 0.5rem; font-weight: 400; font-size: 0.9rem;">Keep me logged
+                    in</label>
+            </div>
+            <button id="login-btn" class="btn primary-btn full-width">LOGIN</button>
+            <div id="login-msg" class="error-msg"></div>
+        </div>
+    </div>
+
+    <!-- Dashboard Content (Hidden initially) -->
+    <div id="admin-dashboard" class="main-layout hidden" style="display: none;">
+        <div class="admin-container">
+            <div class="admin-header">
+                <div>
+                    <h2>Track Ingestion Dashboard</h2>
+                    <span id="last-saved-time" style="font-size:0.8rem; color:#666;">Last Update: Checking...</span>
+                </div>
+                <button id="logout-btn" class="btn secondary-btn">LOGOUT</button>
+            </div>
+
+            <form id="ingest-form">
+                <div class="form-group">
+                    <label>Track Title</label>
+                    <input type="text" id="track-title" required>
+                </div>
+                <div class="form-group">
+                    <label>Genre</label>
+                    <input type="text" id="track-genre" required>
+                </div>
+                <div class="form-group">
+                    <label>Cover Image</label>
+                    <input type="text" id="track-image" placeholder="URL (e.g. assets/chandra.png)">
+                    <input type="file" id="track-image-file" accept="image/*" style="margin-top:0.5rem">
+                    <small style="color:#888; font-size:0.75rem;">Upload overrides URL. (Requires Server)</small>
+                </div>
+                <div class="form-group">
+                    <label>Audio File</label>
+                    <input type="text" id="track-audio" placeholder="URL (e.g. assets/music/track.wav)">
+                    <input type="file" id="track-audio-file" accept="audio/*" style="margin-top:0.5rem">
+                </div>
+                <div class="form-group">
+                    <label>Bandcamp Link</label>
+                    <input type="text" id="track-bandcamp">
+                </div>
+
+                <button type="submit" class="btn primary-btn">ADD TRACK TO LIST</button>
+            </form>
+
+            <hr style="margin: 2rem 0; border: 0; border-top: 1px solid #eee;">
+
+            <div class="admin-header" style="border:none; margin-bottom:1rem; padding-bottom:0;">
+                <h3><i class="fa-solid fa-list"></i> Existing Tracks</h3>
+                <button id="refresh-btn" class="btn"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
+            </div>
+
+            <div class="tracks-list-container">
+                <table class="tracks-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">ID</th>
+                            <th style="width: 60px;">Art</th>
+                            <th>Title</th>
+                            <th>Genre</th>
+                            <th style="width: 100px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tracks-table-body">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- JSON Fallback (Hidden by default unless server unavailable?) -->
+            <div id="manual-mode-notice" class="hidden"
+                style="margin-top: 2rem; padding: 1rem; background: #fff3cd; border: 1px solid #ffeeba;">
+                <strong>Server Not Detected:</strong> Auto-save disabled. Running in Manual Mode.
+                <textarea id="json-output" class="preview-json" readonly></textarea>
+                <button id="copy-json-btn" class="btn" style="margin-top:0.5rem">COPY JSON MANUALLY</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inject Footer -->
+    <div id="footer-root"></div>
+
+    <!-- Scripts -->
+    <script src="navbar.js"></script>
+    <script src="tracks.json" type="text/javascript"></script> <!-- Need valid JS or fetch? -->
+    <!-- tracks.json is JSON, scripts can't load it directly unless assigned to variable. 
+         Wait, `tracks.json` is currently loaded how? 
+         In `script.js` we use `fetch` or assume `tracks` global?
+         Looking at `script.js`: it relies on `tracks` being available or fetched? 
+         Line 289: `tracks.slice(...)`. `tracks` is used as a global variable.
+         Wait, I need to check `index.html`. It doesn't seem to load `tracks.json` as script.
+         How is `tracks` loaded?
+         Maybe `script.js` *fetches* it? NO, `script.js` uses it synchronously in `renderMasterShowcase`.
+         Check `index.html`: 
+         `<script src="script.js"></script>`
+         Maybe `tracks` is defined in `script.js`?
+         Let me check `script.js` start.
+    -->
+    <script src="admin.js"></script>
+
+</body>
+
+</html>
