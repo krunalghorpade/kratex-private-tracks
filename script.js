@@ -83,10 +83,85 @@ document.addEventListener('DOMContentLoaded', async () => {
     initFooter();
     setupMobileNav();
 
-    initCarousel();
-    fetchShows();
-    renderYoutubeCarousel();
-    renderMhouseCarousel();
+    // --- DYNAMIC CONTENT FETCHING ---
+
+    // 1. Fetch Banners
+    async function initCarousel() {
+        const carouselInner = document.querySelector('.carousel-inner');
+        if (!carouselInner) return;
+
+        try {
+            const res = await fetch(`${API_BASE}/api/banners`);
+            if (res.ok) {
+                const banners = await res.json();
+                if (banners.length > 0) {
+                    carouselInner.innerHTML = ''; // Clear default
+                    banners.forEach((b, idx) => {
+                        const item = document.createElement('div');
+                        item.className = `carousel-item ${idx === 0 ? 'active' : ''}`;
+                        // If link exists, wrap in anchor? Or just image. Assuming image for now or simple link.
+                        const imgHtml = `<img src="${b.image_path}" class="d-block w-100" alt="Banner">`;
+                        item.innerHTML = b.link_url ? `<a href="${b.link_url}">${imgHtml}</a>` : imgHtml;
+                        carouselInner.appendChild(item);
+                    });
+                }
+            }
+        } catch (e) { console.error("Banner fetch failed", e); }
+
+        // ... (Keep existing Carousel interval logic if present, or rely on Bootstrap if used, 
+        // but here it seems custom or simple. Assuming simple CSS/JS carousel)
+    }
+
+    // 2. Fetch YouTube Carousel
+    async function renderYoutubeCarousel() {
+        const container = document.getElementById('youtube-carousel-content'); // Need to ensure ID matches HTML
+        // Original code used 'renderYoutubeCarousel' but probably hardcoded.
+        if (!container) return;
+
+        try {
+            const res = await fetch(`${API_BASE}/api/youtube`);
+            if (res.ok) {
+                const videos = await res.json();
+                if (videos.length > 0) {
+                    let html = '';
+                    videos.forEach(v => {
+                        html += `
+                             <div class="youtube-item">
+                                <iframe width="100%" height="200" src="https://www.youtube.com/embed/${v.video_id}" frameborder="0" allowfullscreen></iframe>
+                                <p>${v.title}</p>
+                             </div>
+                        `;
+                    });
+                    container.innerHTML = html;
+                }
+            }
+        } catch (e) { }
+    }
+
+    // 3. Fetch M-House
+    async function renderMhouseCarousel() {
+        const container = document.getElementById('mhouse-carousel-content');
+        if (!container) return;
+
+        try {
+            const res = await fetch(`${API_BASE}/api/mhouse`);
+            if (res.ok) {
+                const mhouseTracks = await res.json();
+                container.innerHTML = '';
+                mhouseTracks.forEach(t => {
+                    const el = document.createElement('div');
+                    el.className = 'mhouse-item';
+                    el.innerHTML = `
+                        <img src="${t.image}" alt="${t.title}">
+                        <h4>${t.title}</h4>
+                        <p>${t.genre}</p>
+                    `;
+                    el.addEventListener('click', () => playTrack(t)); // Reuse play logic?
+                    container.appendChild(el);
+                });
+            }
+        } catch (e) { }
+    }
 
     // Data Load Phase
     await loadTracksApp();
@@ -296,19 +371,24 @@ function renderRankings() {
     if (!list) return;
     list.innerHTML = '';
 
-    // Sort by manual order (using JSON order as ranking)
-    const sorted = tracks.slice(0, 10);
+    // Sort by downloads (lifetime)
+    const sorted = [...tracks].sort((a, b) => {
+        const dlsA = (a.stats && a.stats.downloads) ? parseInt(a.stats.downloads) : 0;
+        const dlsB = (b.stats && b.stats.downloads) ? parseInt(b.stats.downloads) : 0;
+        return dlsB - dlsA;
+    }).slice(0, 10);
 
     sorted.forEach((track, index) => {
         const li = document.createElement('li');
         li.className = 'rank-item';
         li.onclick = () => openTrackPage(track.id);
+        const dlCount = (track.stats && track.stats.downloads) ? track.stats.downloads : 0;
         li.innerHTML = `
             <span class="rank-number">#${index + 1}</span>
             <img src="${track.image}" class="mini-art" alt="art">
             <div class="rank-details">
                 <h4>${track.title}</h4>
-                <p>${track.genre}</p>
+                <p>${track.genre} <span style="font-size:0.75em; opacity:0.7; margin-left:6px;"><i class="fa-solid fa-download"></i> ${dlCount}</span></p>
             </div>
         `;
         list.appendChild(li);

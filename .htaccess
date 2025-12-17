@@ -6,6 +6,10 @@ RewriteRule ^api/tracks$ api/tracks.php [L,QSA]
 RewriteRule ^api/upload$ api/upload.php [L,QSA]
 RewriteRule ^api/stats$ api/stats.php [L,QSA]
 RewriteRule ^api/meta$ api/meta.php [L,QSA]
+RewriteRule ^api/mhouse$ api/mhouse.php [L,QSA]
+RewriteRule ^api/banners$ api/banners.php [L,QSA]
+RewriteRule ^api/youtube$ api/youtube.php [L,QSA]
+RewriteRule ^api/settings$ api/settings.php [L,QSA]
 
 # Prevent directory listing
 Options -Indexes

@@ -23,20 +23,22 @@ try {
     if ($type === 'view') $col = 'views';
     elseif ($type === 'download') $col = 'downloads';
     elseif ($type === 'wav') $col = 'wav_clicks';
+    elseif ($type === 'play') $col = 'plays';
 
     if ($col) {
         $stmt = $pdo->prepare("UPDATE tracks SET $col = $col + 1 WHERE id = ?");
         $stmt->execute([$id]);
 
         // Return updated stats
-        $stmt = $pdo->prepare("SELECT views, downloads, wav_clicks FROM tracks WHERE id = ?");
+        $stmt = $pdo->prepare("SELECT views, downloads, wav_clicks, plays FROM tracks WHERE id = ?");
         $stmt->execute([$id]);
         $row = $stmt->fetch();
         
         $stats = [
             'views' => (int)$row['views'],
             'downloads' => (int)$row['downloads'],
-            'wavClicks' => (int)$row['wav_clicks']
+            'wavClicks' => (int)$row['wav_clicks'],
+            'plays' => (int)($row['plays'] ?? 0)
         ];
         
         echo json_encode(['success' => true, 'stats' => $stats]);
