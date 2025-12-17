@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kratex Music Store</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- LineIcons CDN -->
+    <link href="https://cdn.lineicons.com/5.0/lineicons.css" rel="stylesheet" />
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">KRATEX 🔒 PRIVATE SONGS</div>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="SEARCH CATALOG...">
+            <div id="search-dropdown" class="dropdown-results hidden"></div>
+        </div>
+
+        <nav>
+            <a href="https://kratex.in" target="_blank">KRATEX WEBSITE</a>
+            <a href="https://shows.kratex.in" target="_blank">SHOW TICKETS</a>
+        </nav>
+    </header>
+
+    <!-- Main Layout (Home) -->
+    <main id="home-view" class="main-layout">
+
+        <!-- Master Showcase (Left 3/4) -->
+        <section class="master-showcase">
+            <h2 class="section-title">MASTER SHOWCASE</h2>
+            <div id="shelf-grid" class="grid-container">
+                <!-- Tracks rendered via JS -->
+            </div>
+        </section>
+
+        <!-- Ranking Showcase (Right 1/4) -->
+        <aside class="ranking-showcase">
+            <h2 class="section-title">TOP RANKING</h2>
+            <ul id="ranking-list" class="ranking-list">
+                <!-- Rankings rendered via JS -->
+            </ul>
+        </aside>
+
+    </main>
+
+    <!-- Track Landing Page (Hidden by default) -->
+    <section id="track-view" class="track-landing hidden">
+        <button id="back-btn" class="nav-back"><i class="lni lni-arrow-left"></i> BACK TO CATALOG</button>
+
+        <div class="track-detaill-container">
+            <div class="track-artwork">
+                <img id="detail-img" src="" alt="Track Artwork">
+            </div>
+
+            <div class="track-info">
+                <h1 id="detail-title">Track Title</h1>
+                <h3 id="detail-genre">GENRE: HOUSE</h3>
+                <p id="detail-desc">A detailed description of the track goes here. It captures the vibe, the rhythm, and
+                    the essence of the sound crafted by Kratex.</p>
+
+                <div class="controls">
+                    <button id="play-preview-btn" class="btn primary-btn">
+                        <i class="lni lni-play"></i> PLAY PREVIEW (30s)
+                    </button>
+                    <button id="download-trigger-btn" class="btn secondary-btn">
+                        <i class="lni lni-download"></i> DOWNLOAD
+                    </button>
+                </div>
+                <div id="audio-status" class="status-text"></div>
+            </div>
+        </div>
+
+        <!-- More Like This Section -->
+        <div class="more-like-this-container">
+            <h3 class="section-title">MORE LIKE THIS</h3>
+            <div id="more-like-grid" class="grid-container">
+                <!-- Tracks rendered via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Password Modal -->
+    <div id="password-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal"><i class="lni lni-xmark"></i></span>
+            <h3>RESTRICTED ACCESS</h3>
+            <p>Enter password to unlock download.</p>
+
+            <input type="password" id="password-input" placeholder="ENTER PASSWORD">
+
+            <button id="submit-password-btn" class="btn full-width" disabled><i class="lni lni-lock-alt"></i>
+                UNLOCK</button>
+            <div id="feedback-msg" class="feedback"></div>
+
+            <div class="modal-footer-link">
+                <span>Don't have a password?</span>
+                <button id="get-password-link">GET ACCESS <i class="lni lni-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
