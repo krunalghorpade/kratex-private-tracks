@@ -22,7 +22,7 @@ let currentTrackId = null;
 async function loadTracksApp() {
     try {
         // 1. Try API (if server running)
-        const res = await fetch('http://localhost:3000/api/tracks');
+        const res = await fetch('/api/tracks');
         if (res.ok) {
             tracks = await res.json();
             console.log("Loaded tracks from Localhost API");
@@ -61,7 +61,7 @@ function sortTracksDesc() {
 async function recordStat(id, type) {
     // Only works if server is running
     try {
-        await fetch('http://localhost:3000/api/stats', {
+        await fetch('/api/stats', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id, type })

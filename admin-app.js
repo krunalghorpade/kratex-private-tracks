@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (isServerAvailable) {
             try {
-                const res = await fetch(`http://localhost:3000/api/tracks/${id}`, {
+                const res = await fetch(`/api/tracks/${id}`, {
                     method: 'DELETE'
                 });
                 if (res.ok) {
@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. Core Logic
     async function checkServerStatus() {
         try {
-            const res = await fetch(`http://localhost:3000/api/meta?t=${Date.now()}`);
+            const res = await fetch(`/api/meta?t=${Date.now()}`);
             if (res.ok) {
                 isServerAvailable = true;
                 const data = await res.json();
@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function loadTracks() {
         try {
             if (isServerAvailable) {
-                const res = await fetch(`http://localhost:3000/api/tracks?t=${Date.now()}`);
+                const res = await fetch(`/api/tracks?t=${Date.now()}`);
                 currentTracks = await res.json();
             } else {
                 const res = await fetch(`tracks.json?t=${Date.now()}`);
@@ -279,7 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function updateTrack(id, trackData) {
         if (isServerAvailable) {
             try {
-                const res = await fetch(`http://localhost:3000/api/tracks/${id}`, {
+                const res = await fetch(`/api/tracks/${id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(trackData)
@@ -309,7 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function addTrack(trackData) {
         if (isServerAvailable) {
             try {
-                const res = await fetch('http://localhost:3000/api/tracks', {
+                const res = await fetch('/api/tracks', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(trackData)
@@ -346,7 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (imageFile) formData.append('image', imageFile);
         if (audioFile) formData.append('audio', audioFile);
 
-        const res = await fetch('http://localhost:3000/api/upload', {
+        const res = await fetch('/api/upload', {
             method: 'POST',
             body: formData
         });

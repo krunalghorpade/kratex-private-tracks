@@ -10,9 +10,17 @@
     {
         "title": "Mama Chya Gavala",
         "genre": "House",
-        "image": "assets/uploads/image-1765979146883-486984151.png",
+        "image": "assets/uploads/image-1765986653156-103711232.png",
         "audio": "assets/uploads/audio-1765979146936-966965656.mp3",
         "bandcamp": "https://kratex.bandcamp.com/track/mamachya-gavala-extended-mix",
         "id": 17
+    },
+    {
+        "title": "asda",
+        "genre": "sadas",
+        "image": "assets/uploads/image-1765986588028-59915657.png",
+        "audio": "",
+        "bandcamp": "",
+        "id": 18
     }
 ]
