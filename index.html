@@ -9,42 +9,101 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <!-- LineIcons CDN -->
-    <link href="https://cdn.lineicons.com/5.0/lineicons.css" rel="stylesheet" />
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
 </head>
 
 <body>
-
-    <!-- Header -->
-    <header>
-        <div class="logo">KRATEX 🔒 PRIVATE SONGS</div>
-
-        <!-- Search Bar -->
-        <div class="search-container">
-            <input type="text" id="search-input" placeholder="SEARCH CATALOG...">
-            <div id="search-dropdown" class="dropdown-results hidden"></div>
-        </div>
-
-        <nav>
-            <a href="https://kratex.in" target="_blank">KRATEX WEBSITE</a>
-            <a href="https://shows.kratex.in" target="_blank">SHOW TICKETS</a>
-        </nav>
-    </header>
+    <div id="navbar-root"></div>
 
     <!-- Main Layout (Home) -->
     <main id="home-view" class="main-layout">
 
         <!-- Master Showcase (Left 3/4) -->
         <section class="master-showcase">
-            <h2 class="section-title">MASTER SHOWCASE</h2>
-            <div id="shelf-grid" class="grid-container">
-                <!-- Tracks rendered via JS -->
+
+            <!-- 1. Carousel -->
+            <div id="hero-carousel" class="carousel-container">
+                <button class="carousel-arrow carousel-prev"><i class="fa-solid fa-chevron-left"></i></button>
+                <div class="carousel-slide active" style="background-image: url('assets/hero1.png');">
+                    <div class="carousel-caption">
+                        <h2>KRATEX LIVE</h2>
+                        <a href="https://shows.kratex.in" class="btn primary-btn" target="_blank">GET TICKETS</a>
+                    </div>
+                </div>
+                <!-- JS populates others or we keep static -->
+                <div class="carousel-slide" style="background-image: url('assets/hero2.png');"></div>
+                <div class="carousel-slide" style="background-image: url('assets/hero3.png');"></div>
+                <button class="carousel-arrow carousel-next"><i class="fa-solid fa-chevron-right"></i></button>
+
+                <div class="carousel-dots"></div>
+            </div>
+
+            <!-- 2. Upcoming Shows -->
+            <div class="shows-section">
+                <h2 class="section-title">UPCOMING SHOWS</h2>
+                <div id="shows-grid" class="shows-grid">
+                    <!-- Populated by JS -->
+                    <div class="loading-shows">Loading Shows...</div>
+                </div>
+            </div>
+
+            <!-- 3. Tracks (Paginated) -->
+            <div class="tracks-section">
+                <h2 class="section-title">MASTER SHOWCASE</h2>
+                <div id="shelf-grid" class="grid-container">
+                    <!-- Tracks rendered via JS -->
+                </div>
+                <div id="pagination-controls" class="pagination-controls">
+                    <button id="prev-page" class="page-btn">PREV</button>
+                    <span id="page-info" class="page-info">Page 1 of 1</span>
+                    <button id="next-page" class="page-btn">NEXT</button>
+                </div>
+            </div>
+
+            <!-- 4. Kratex Originals (YouTube) -->
+            <div class="video-carousel-section" style="margin-top: 4rem;">
+                <h2 class="section-title">KRATEX ORIGINAL SONGS</h2>
+                <div class="horizontal-scroll-container">
+                    <button class="scroll-arrow scroll-left" id="yt-left"><i
+                            class="fa-solid fa-chevron-left"></i></button>
+                    <div class="scroll-wrapper" id="yt-scroll">
+                        <!-- Populated by JS -->
+                    </div>
+                    <button class="scroll-arrow scroll-right" id="yt-right"><i
+                            class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </div>
+
+            <!-- 5. M-House Imprint -->
+            <div class="mhouse-section" style="margin-top: 4rem;">
+                <div class="mhouse-header">
+                    <h2 class="section-title" style="margin-bottom:0; border:none; padding-bottom:0;">M-HOUSE IMPRINT
+                    </h2>
+                    <div style="display:flex; gap:1rem;">
+                        <a href="https://mhousemusic.com" target="_blank" class="btn primary-btn"
+                            style="padding: 0.5rem 1rem; font-size: 0.7rem;">VISIT SITE</a>
+                        <a href="mailto:demo@mhousemusic.com" class="btn secondary-btn"
+                            style="padding: 0.5rem 1rem; font-size: 0.7rem;">SEND DEMO</a>
+                    </div>
+                </div>
+                <div style="border-bottom: 1px solid #e0e0e0; margin-bottom: 2rem; margin-top: 0.5rem;"></div>
+
+                <div class="horizontal-scroll-container">
+                    <button class="scroll-arrow scroll-left" id="mhouse-left"><i
+                            class="fa-solid fa-chevron-left"></i></button>
+                    <div class="scroll-wrapper" id="mhouse-scroll">
+                        <!-- M-House Tracks Populated by JS -->
+                    </div>
+                    <button class="scroll-arrow scroll-right" id="mhouse-right"><i
+                            class="fa-solid fa-chevron-right"></i></button>
+                </div>
             </div>
         </section>
 
         <!-- Ranking Showcase (Right 1/4) -->
         <aside class="ranking-showcase">
-            <h2 class="section-title">TOP RANKING</h2>
+            <h2 class="section-title">TOP 10 DOWNLOADS</h2>
             <ul id="ranking-list" class="ranking-list">
                 <!-- Rankings rendered via JS -->
             </ul>
@@ -54,7 +113,7 @@
 
     <!-- Track Landing Page (Hidden by default) -->
     <section id="track-view" class="track-landing hidden">
-        <button id="back-btn" class="nav-back"><i class="lni lni-arrow-left"></i> BACK TO CATALOG</button>
+        <button id="back-btn" class="nav-back"><i class="fa-solid fa-arrow-left"></i> BACK TO CATALOG</button>
 
         <div class="track-detaill-container">
             <div class="track-artwork">
@@ -69,10 +128,10 @@
 
                 <div class="controls">
                     <button id="play-preview-btn" class="btn primary-btn">
-                        <i class="lni lni-play"></i> PLAY PREVIEW (30s)
+                        <i class="fa-solid fa-play"></i> PLAY PREVIEW (30s)
                     </button>
                     <button id="download-trigger-btn" class="btn secondary-btn">
-                        <i class="lni lni-download"></i> DOWNLOAD
+                        <i class="fa-solid fa-download"></i> DOWNLOAD
                     </button>
                 </div>
                 <div id="audio-status" class="status-text"></div>
@@ -91,23 +150,31 @@
     <!-- Password Modal -->
     <div id="password-modal" class="modal hidden">
         <div class="modal-content">
-            <span class="close-modal"><i class="lni lni-xmark"></i></span>
+            <span class="close-modal"><i class="fa-solid fa-xmark"></i></span>
             <h3>RESTRICTED ACCESS</h3>
             <p>Enter password to unlock download.</p>
 
             <input type="password" id="password-input" placeholder="ENTER PASSWORD">
 
-            <button id="submit-password-btn" class="btn full-width" disabled><i class="lni lni-lock-alt"></i>
+            <button id="submit-password-btn" class="btn full-width" disabled><i class="fa-solid fa-lock"></i>
                 UNLOCK</button>
             <div id="feedback-msg" class="feedback"></div>
 
+            <div class="or-divider"><span>OR</span></div>
+
+            <button id="buy-bandcamp-btn" class="btn full-width bandcamp-btn">
+                <i class="fa-solid fa-cart-shopping"></i> Download WAV File
+            </button>
+
             <div class="modal-footer-link">
                 <span>Don't have a password?</span>
-                <button id="get-password-link">GET ACCESS <i class="lni lni-arrow-right"></i></button>
+                <button id="get-password-link">GET ACCESS <i class="fa-solid fa-arrow-right"></i></button>
             </div>
         </div>
     </div>
 
+    <script src="navbar.js"></script>
+    <script src="secrets.js"></script>
     <script src="script.js"></script>
 </body>
 

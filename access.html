@@ -9,13 +9,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link href="https://cdn.lineicons.com/5.0/lineicons.css" rel="stylesheet" />
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
 
 </head>
 
 <body class="access-body">
 
-    <div class="access-logo">KRATEX.STORE</div>
+    <div id="navbar-root"></div>
 
     <div class="access-container">
         <h1 class="access-title">Choose Your Access</h1>
@@ -30,9 +31,9 @@
                 <div class="plan-price">₹49<span>/mo</span></div>
 
                 <ul class="plan-features">
-                    <li><i class="lni lni-checkmark"></i> Direct Password Access</li>
-                    <li><i class="lni lni-instagram"></i> Exclusive Content & BTS</li>
-                    <li><i class="lni lni-music"></i> New Releases First</li>
+                    <li><i class="fa-solid fa-check"></i> Direct Password Access</li>
+                    <li><i class="fa-brands fa-instagram"></i> Exclusive Content & BTS</li>
+                    <li><i class="fa-solid fa-music"></i> New Releases First</li>
                 </ul>
 
                 <a href="https://www.instagram.com/kratex_music/" target="_blank" class="plan-btn">Subscribe on
@@ -45,18 +46,20 @@
                 <div class="plan-price">₹59<span>/mo</span></div>
 
                 <ul class="plan-features">
-                    <li><i class="lni lni-checkmark"></i> Direct Password Access</li>
-                    <li><i class="lni lni-youtube"></i> Members-only Live Streams</li>
-                    <li><i class="lni lni-star"></i> Loyalty Badges</li>
+                    <li><i class="fa-solid fa-check"></i> Direct Password Access</li>
+                    <li><i class="fa-brands fa-youtube"></i> Members-only Live Streams</li>
+                    <li><i class="fa-solid fa-star"></i> Loyalty Badges</li>
                 </ul>
 
                 <a href="https://www.youtube.com/@kratex" target="_blank" class="plan-btn">Join on YouTube</a>
             </div>
         </div>
 
-        <a href="index.html" class="back-link-access"><i class="lni lni-arrow-left"></i> Return to Store</a>
+        <a href="index.html" class="back-link-access"><i class="fa-solid fa-arrow-left"></i> Return to Store</a>
     </div>
 
+    <script src="navbar.js"></script>
+    <script>initNavbar(); setupMobileNav();</script>
 </body>
 
 </html>

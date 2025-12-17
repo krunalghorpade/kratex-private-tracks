@@ -24,6 +24,8 @@ body {
     color: var(--text-color);
     font-family: var(--font-main);
     overflow-x: hidden;
+    padding-top: 85px;
+    /* Prevent content overlap with fixed header */
 }
 
 /* Typography & Utils */
@@ -49,11 +51,17 @@ header {
     align-items: center;
     padding: 1.5rem 3rem;
     border-bottom: 1px solid var(--border-color);
-    position: sticky;
+    position: fixed;
+    /* Fixed instead of Sticky */
+    width: 100%;
     top: 0;
-    background: rgba(255, 255, 255, 0.95);
+    left: 0;
+    /* Ensure left alignment */
+    background: rgba(255, 255, 255, 0.98);
+    /* Less transparent */
     backdrop-filter: blur(10px);
-    z-index: 100;
+    z-index: 999;
+    /* Standard high z-index */
 }
 
 .logo {
@@ -62,6 +70,10 @@ header {
     letter-spacing: -0.05em;
     color: #000;
     min-width: 150px;
+}
+
+.mobile-actions {
+    display: none;
 }
 
 /* Search Wrapper */
@@ -207,6 +219,8 @@ nav a:hover {
     /* 75% width */
     padding: 3rem;
     border-right: 1px solid var(--border-color);
+    min-width: 0;
+    /* Prevents flex blowout */
 }
 
 .ranking-showcase {
@@ -214,6 +228,8 @@ nav a:hover {
     /* 25% width */
     padding: 3rem;
     background: var(--panel-bg);
+    min-width: 300px;
+    /* Ensure visibility */
 }
 
 /* Grid Layout */
@@ -502,11 +518,49 @@ nav a:hover {
     border: 1px solid var(--border-color);
     color: #333;
     padding: 3rem;
-    width: 400px;
+    width: 90%;
+    max-width: 550px;
+    /* Made bigger */
     text-align: center;
     position: relative;
     box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
     border-radius: 8px;
+}
+
+.or-divider {
+    display: flex;
+    align-items: center;
+    margin: 1.5rem 0;
+    color: #999;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+}
+
+.or-divider::before,
+.or-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #eee;
+}
+
+.or-divider span {
+    margin: 0 1rem;
+}
+
+.bandcamp-btn {
+    width: 100%;
+    margin-top: 1rem;
+    background: #629aa9;
+    /* Bandcamp-ish teal */
+    color: #fff;
+    border: none;
+}
+
+.bandcamp-btn:hover {
+    background: #4b7d8b;
+    color: #fff;
 }
 
 .close-modal {
@@ -803,10 +857,10 @@ nav a:hover {
 
     /* Track Landing Page */
     .track-landing {
-        top: 0;
-        height: 100vh;
-        z-index: 200;
-        /* Cover everything */
+        top: 80px;
+        height: calc(100vh - 80px);
+        z-index: 90;
+        /* Below header (100) but above content */
         padding: 2rem 1.5rem;
     }
 
@@ -860,6 +914,30 @@ nav a:hover {
         width: 90%;
         padding: 2rem;
     }
+
+    .desktop-only {
+        display: none !important;
+        /* Force hide desktop elements */
+    }
+
+    .mobile-actions {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+    }
+
+
+
+    .mobile-nav-btn {
+        display: block;
+    }
+
+    .logo {
+        font-size: 1rem;
+        flex: 1;
+        /* Allow logo to take space if needed */
+        text-align: left;
+    }
 }
 
 @media (max-width: 480px) {
@@ -876,5 +954,617 @@ nav a:hover {
     nav a {
         margin-left: 1rem;
         font-size: 0.7rem;
+    }
+}
+
+/* --- Mobile Navigation Components --- */
+.mobile-nav-btn {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: none;
+    padding: 0;
+    width: 44px;
+    height: 44px;
+    font-size: 1.4rem;
+    color: #111;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s;
+}
+
+.mobile-nav-btn:hover {
+    opacity: 0.6;
+}
+
+/* Ensure icons fit nicely */
+.mobile-nav-btn i {
+    display: block;
+}
+
+/* Mobile Overlay - Full Screen */
+.mobile-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    z-index: 2000;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.mobile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.mobile-close-btn {
+    background: none;
+    border: none;
+    font-size: 2rem;
+    color: #111;
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+.mobile-nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding-top: 1rem;
+    align-items: center;
+}
+
+.mobile-nav-links a {
+    font-size: 2rem;
+    color: #000;
+    text-decoration: none;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    transition: color 0.3s;
+}
+
+.mobile-nav-links a:hover {
+    color: var(--accent-color);
+}
+
+.mobile-search-container {
+    padding-top: 2rem;
+}
+
+.mobile-search-container input {
+    width: 100%;
+    padding: 1rem 0;
+    font-size: 1.5rem;
+    border: none;
+    border-bottom: 2px solid #111;
+    outline: none;
+    background: transparent;
+    font-family: var(--font-main);
+    color: #000;
+    border-radius: 0;
+}
+
+/* --- Homepage Carousel --- */
+.carousel-container {
+    height: 350px;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 3rem;
+    border-radius: 8px;
+    background: transparent;
+    box-shadow: none;
+}
+
+.carousel-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+}
+
+.carousel-slide.active {
+    opacity: 1;
+}
+
+.carousel-caption {
+    position: absolute;
+    bottom: 2rem;
+    left: 2rem;
+    color: #fff;
+    text-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.carousel-caption h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+}
+
+/* --- Upcoming Shows --- */
+.shows-section {
+    margin-bottom: 3rem;
+}
+
+.shows-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+.show-card {
+    background: #fff;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: left;
+    transition: transform 0.3s, border-color 0.3s;
+    min-height: 120px;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: none;
+}
+
+.show-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-color);
+}
+
+.show-date {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+.show-venue {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+    color: #000;
+}
+
+.show-location {
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: auto;
+    /* Push button down */
+}
+
+.show-btn {
+    margin-top: auto;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-decoration: none;
+    border: 1px solid var(--border-color);
+    padding: 4px 8px;
+    text-align: center;
+    display: inline-block;
+    color: #000;
+    /* Ensure text color is visible */
+    background-color: transparent;
+    /* Ensure background is transparent */
+    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+}
+
+.show-btn:hover {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: #fff;
+}
+
+.view-all-card {
+    background: var(--text-color);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.view-all-card:hover {
+    background: var(--accent-color);
+}
+
+/* --- Carousel Controls --- */
+.carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.3);
+    color: #fff;
+    border: none;
+    font-size: 2rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    z-index: 10;
+    transition: background 0.3s;
+}
+
+.carousel-arrow:hover {
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.carousel-prev {
+    left: 0;
+}
+
+.carousel-next {
+    right: 0;
+}
+
+.carousel-dots {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.5rem;
+    z-index: 10;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.dot.active {
+    background: #fff;
+    transform: scale(1.2);
+}
+
+/* --- Pagination Controls --- */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+    align-items: center;
+}
+
+.page-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: #333;
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.page-btn:hover:not(:disabled) {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+.page-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+    border-color: var(--border-color);
+}
+
+.page-info {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* --- YouTube & M-House Carousels (Horizontal Scroll) --- */
+.horizontal-scroll-container {
+    position: relative;
+    margin-bottom: 3rem;
+}
+
+.scroll-wrapper {
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 1rem 0;
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.scroll-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
+.video-card {
+    min-width: 300px;
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    aspect-ratio: 16/9;
+    flex-shrink: 0;
+}
+
+.video-card iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.mhouse-card {
+    min-width: 200px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.mhouse-card img {
+    width: 100%;
+    border-radius: 4px;
+    transition: transform 0.3s;
+}
+
+.mhouse-card:hover img {
+    transform: scale(1.05);
+}
+
+.scroll-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #fff;
+    border: 1px solid var(--border-color);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 5;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.scroll-left {
+    left: -20px;
+}
+
+.scroll-right {
+    right: -20px;
+}
+
+.mhouse-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+@media(max-width: 768px) {
+
+    /* Mobile Header & Body Adjustments */
+    header {
+        padding: 1rem 1.5rem;
+    }
+
+    body {
+        padding-top: 70px;
+    }
+
+    /* --- Mobile Layout Reordering --- */
+    .main-layout {
+        flex-direction: column;
+    }
+
+    .master-showcase {
+        display: contents;
+    }
+
+    /* 1. Carousel */
+    .carousel-container {
+        order: 1;
+        height: 250px;
+        margin: 1.5rem;
+        width: auto;
+    }
+
+    .carousel-caption {
+        left: 1rem;
+        bottom: 1rem;
+    }
+
+    .carousel-caption h2 {
+        font-size: 1.5rem;
+    }
+
+    /* 2. Ranking (Horizontal Scroll List) */
+    .ranking-showcase {
+        order: 2;
+        width: 100%;
+        padding: 0 1.5rem 2rem;
+        background: transparent;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        min-width: 0;
+    }
+
+    .ranking-list {
+        display: flex;
+        gap: 1rem;
+        width: 100%;
+        overflow-x: auto;
+        /* Title stays, list scrolls */
+        padding-bottom: 1rem;
+        /* Space for scrollbar if any */
+        scrollbar-width: none;
+    }
+
+    .ranking-list::-webkit-scrollbar {
+        display: none;
+    }
+
+    .rank-item {
+        flex-direction: column;
+        min-width: 140px;
+        width: 140px;
+        border: none;
+        align-items: flex-start;
+        padding: 0;
+        margin: 0;
+        background: transparent !important;
+        position: relative;
+    }
+
+    .rank-item:hover {
+        padding-left: 0;
+        margin-left: 0;
+        background: transparent;
+    }
+
+    .rank-number {
+        display: block;
+        position: absolute;
+        top: 0.5rem;
+        left: 0.5rem;
+        font-size: 0.7rem;
+        background: rgba(0, 0, 0, 0.7);
+        color: #fff;
+        padding: 2px 6px;
+        border-radius: 4px;
+        z-index: 2;
+        width: auto;
+        margin: 0;
+    }
+
+    .mini-art {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1/1;
+        margin-right: 0;
+        margin-bottom: 0.5rem;
+        border-radius: 4px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .rank-details {
+        width: 100%;
+        text-align: left;
+    }
+
+    .rank-details h4 {
+        font-size: 0.8rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .rank-details p {
+        display: none;
+        /* Hide genre to save space if needed? User asked for "track name on bottom". Keeping genre is fine if fits. */
+        display: block;
+        font-size: 0.65rem;
+    }
+
+    /* 3. Tracks */
+    .tracks-section {
+        order: 3;
+        padding: 2rem 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    /* 4. Shows (Horizontal Scroll) */
+    .shows-section {
+        order: 4;
+        padding: 2rem 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .shows-grid {
+        display: flex;
+        overflow-x: auto;
+        gap: 1rem;
+        width: 100%;
+        grid-template-columns: none;
+        /* Override grid */
+        padding-bottom: 1rem;
+        scrollbar-width: none;
+    }
+
+    .shows-grid::-webkit-scrollbar {
+        display: none;
+    }
+
+    .show-card {
+        min-width: 260px;
+        /* Wider for horizontal scroll readability */
+        flex-shrink: 0;
+    }
+
+    .view-all-card {
+        min-width: 150px;
+    }
+
+    /* 5. Videos */
+    .video-carousel-section {
+        order: 5;
+        padding: 2rem 1.5rem;
+    }
+
+    /* 6. M-House (Smaller Arts + Text) */
+    .mhouse-section {
+        order: 6;
+        padding: 2rem 1.5rem 4rem;
+    }
+
+    .mhouse-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .mhouse-card {
+        min-width: 100px;
+        /* 50% smaller approx (was 200) */
+    }
+
+    /* New class for MHouse text */
+    .mhouse-info {
+        font-size: 0.7rem;
+        margin-top: 0.5rem;
+        line-height: 1.2;
+    }
+
+    .mhouse-info h4 {
+        font-weight: 600;
+        color: #000;
+        margin-bottom: 2px;
+    }
+
+    .mhouse-info p {
+        color: #666;
+        font-size: 0.65rem;
     }
 }
