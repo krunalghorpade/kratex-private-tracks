@@ -1,0 +1,11 @@
+RewriteEngine On
+
+# API Routing
+RewriteRule ^api/tracks/([0-9]+)$ api/tracks.php?id=$1 [L,QSA]
+RewriteRule ^api/tracks$ api/tracks.php [L,QSA]
+RewriteRule ^api/upload$ api/upload.php [L,QSA]
+RewriteRule ^api/stats$ api/stats.php [L,QSA]
+RewriteRule ^api/meta$ api/meta.php [L,QSA]
+
+# Prevent directory listing
+Options -Indexes

@@ -142,6 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 3. Core Logic
     async function checkServerStatus() {
+        const indicator = document.getElementById('server-status-indicator');
         try {
             const res = await fetch(`${API_BASE}/api/meta?t=${Date.now()}`);
             if (res.ok) {
@@ -153,10 +154,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     document.getElementById('last-saved-time').innerText = "Last Saved: Unknown";
                 }
+                if (indicator) {
+                    indicator.innerHTML = '<i class="fa-solid fa-circle"></i> Online';
+                    indicator.classList.remove('offline');
+                    indicator.classList.add('online');
+                }
             }
         } catch (e) {
             isServerAvailable = false;
             document.getElementById('last-saved-time').innerText = "Server Offline (Manual Mode)";
+            if (indicator) {
+                indicator.innerHTML = '<i class="fa-solid fa-circle"></i> Offline';
+                indicator.classList.remove('online');
+                indicator.classList.add('offline');
+            }
         }
         updateModeUI();
     }
